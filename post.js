@@ -7,7 +7,7 @@ form.addEventListener('submit', function (event) {
 });
 */
 
-function send_1 (preset){
+function send (preset){
    var request = new XMLHttpRequest();
    request.addEventListener('load', function(event) {
       if (request.status >= 200 && request.status < 300) {
@@ -23,7 +23,7 @@ function send_1 (preset){
    request.send(data);
    */
    console.log("## >>>> Preset: " + preset);
-   request.open("GET","http://127.0.0.1:9000/preset/"+preset);
+   request.open("GET","http://127.0.0.1:9000/preset/" + preset);
    request.send();
    console.log("## <<<<");
 }

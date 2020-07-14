@@ -12,13 +12,16 @@ func main() {
 	presetHandler := func(w http.ResponseWriter, r *http.Request) {
 		log.Println("###")
 		
+		vars := mux.Vars(r)
+		presetNum := vars["presetNum"]
+		
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		if r.Method == http.MethodOptions {
 			return
 		}
 		
 		var lala = bytes.Buffer{}
-		lala.WriteString(`<YAMAHA_AV cmd="PUT"><NET_RADIO><Play_Control><Preset><Preset_Sel>1</Preset_Sel></Preset></Play_Control></NET_RADIO></YAMAHA_AV>`)
+		lala.WriteString("<YAMAHA_AV cmd=\"PUT\"><NET_RADIO><Play_Control><Preset><Preset_Sel>" + presetNum + "</Preset_Sel></Preset></Play_Control></NET_RADIO></YAMAHA_AV>")
 		
 		_, err := http.Post("http://192.168.178.7/YamahaRemoteControl/ctrl", "text/xml", &lala)
 		if err != nil {
@@ -34,9 +37,8 @@ func main() {
     r := mux.NewRouter()
 
     // This will serve files under http://localhost:9000/static/<filename>
-    r.HandleFunc("/foo", presetHandler).Methods(http.MethodGet)
+    r.HandleFunc("/preset/{presetNum}", presetHandler).Methods(http.MethodGet)
 	r.PathPrefix("/").Handler( http.FileServer( http.Dir("./") ))
-	r.HandleFunc("/preset", presetHandler)
 	
 	r.Use(mux.CORSMethodMiddleware(r))
     
