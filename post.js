@@ -7,7 +7,7 @@ form.addEventListener('submit', function (event) {
 });
 */
 
-function send (preset){
+function GETCommand(urlCmdPath) {
    var request = new XMLHttpRequest();
    request.addEventListener('load', function(event) {
       if (request.status >= 200 && request.status < 300) {
@@ -16,21 +16,26 @@ function send (preset){
          console.warn(request.statusText, request.responseText);
       }
    });
-   console.log("## >>>> Preset: " + preset);
-   request.open("GET","http://127.0.0.1:9000/preset/" + preset);
+   request.open("GET","http://127.0.0.1:9000/" + urlCmdPath);
    request.send();
-   console.log("## <<<<");
+}
+
+function send (preset){
+   GETCommand("preset/" + preset)
 }
 
 function shutdown (){
-   var request = new XMLHttpRequest();
-   request.addEventListener('load', function(event) {
-      if (request.status >= 200 && request.status < 300) {
-         console.log(request.responseText);
-      } else {
-         console.warn(request.statusText, request.responseText);
-      }
-   });
-   request.open("GET","http://127.0.0.1:9000/exit");
-   request.send();
+   GETCommand("exit")
+}
+
+function pureDirectOn (){
+   GETCommand("pureDirectOn")
+}
+
+function pureDirectOff (){
+   GETCommand("pureDirectOff")
+}
+
+function AUDIO2 (){
+   GETCommand("AUDIO2")
 }
