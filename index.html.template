@@ -19,24 +19,28 @@
    <br>
    <button onclick="pureDirectOff()">PureDirect OFF</button>
    <br>
-   <button onclick="source('AUDIO2')">AUDIO2</button>
+   
+   <!--<button onclick="source('AUDIO1')">AUDIO2</button>-->
+   <a onclick="source('AUDIO1')"><img class="presetImage larger" src="static/source_VINYL.png" /></a>
    <br>
-   <button onclick="source('NET RADIO')">NET RADIO</button>
+   <!--<button onclick="source('NET RADIO')">NET RADIO</button>-->
+   <a onclick="source('NET RADIO')"><img class="presetImage larger" src="static/source_NET_RADIO.png" /></a>
 
    <p>
       ##########################################################################
    </p>
 
-   <div>
+   <div id="presetList">
       <h2>Presets</h2>
 
       {{range .}}
       <div id="preset_{{.Index}}">
          {{.Index}} :: {{.Name}}
          <br>
-         <img src="{{.IconURL}}" width="50" />
+         <a onclick="send({{.Index}})"><img class="presetImage" src="{{.IconURL}}" /></a>
          <br>
-         <button onclick="send({{.Index}})"># {{.Name}}</button>
+
+         <!--<button class="presetButton" onclick="send({{.Index}})">TUNE</button>-->
 
          {{end}}
       <div>

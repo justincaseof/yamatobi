@@ -5,3 +5,47 @@ body {
     display: grid;
     max-width: 99em;
 }
+
+#presetList {
+    box-shadow:inset 0px 0px 15px 3px #23395e;
+	background:linear-gradient(to bottom, #68828b 5%, #212731 100%);
+	background-color:#94a6c5;
+	border-radius:10px;
+	border:1px solid #853c0b;
+	display:inline-block;
+    color:#ffffff;
+    
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.presetImage {
+    /*max-width: 50px;*/
+    max-height: 50px;
+
+    box-shadow:inset 0px 0px 15px 3px #23395e;
+	background:linear-gradient(to bottom, #2e466e 5%, #415989 100%);
+	background-color:#2e466e;
+	border-radius:10px;
+	border:1px solid #1f2f47;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+}
+.presetImage:hover {
+	background:linear-gradient(to bottom, #415989 5%, #2e466e 100%);
+    background-color:#415989;
+    
+    border:1px solid #ffffff;
+}
+.presetImage.larger {
+	/*max-width: 50px;*/
+    max-height: 100px;
+}
