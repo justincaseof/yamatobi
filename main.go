@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"html/template"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -32,7 +34,7 @@ type Config struct {
 
 var shutdownSig chan os.Signal
 var config Config
-var presets map[uint8]*Preset
+var presets map[uint8]Preset
 
 func main() {
 	err := LoadConfiguration(&config)
@@ -42,6 +44,8 @@ func main() {
 	if loadPresets() != nil {
 		panic("Cannot load presets from config")
 	}
+	getIndexHTML(os.Stdout)
+
 	defer log.Println("Exit.")
 
 	r := mux.NewRouter()
@@ -50,7 +54,8 @@ func main() {
 	r.HandleFunc("/pureDirectOff", pureDirectOffHandler).Methods(http.MethodGet)
 	r.HandleFunc("/pureDirectOn", pureDirectOnHandler).Methods(http.MethodGet)
 	r.HandleFunc("/AUDIO2", audio2Handler).Methods(http.MethodGet)
-	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./")))
+	r.HandleFunc("/index.html", indexHandler).Methods(http.MethodGet) // index from template
+	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./")))        // rest from fs
 
 	r.Use(mux.CORSMethodMiddleware(r))
 
@@ -126,15 +131,44 @@ func isFile(filename string) bool {
 }
 
 func loadPresets() error {
-	presets = make(map[uint8]*Preset)
+	presets = make(map[uint8]Preset)
 	for _, preset := range config.Presets {
-		if presets[preset.Index] != nil {
+		if presets[preset.Index].Index > 0 {
 			log.Println("Duplicate entry for Index '" + strconv.Itoa(int(preset.Index)) + "'. Overwriting it with current one.")
 		}
-		presets[preset.Index] = &preset
+		presets[preset.Index] = preset
 	}
 
 	return nil
+}
+
+// =============================================================================================
+
+func getIndexHTML(wr io.Writer) {
+	//indexTemplate, err := template.New("index").Funcs(template.FuncMap{"join": strings.Join}).ParseFiles("index.html.template")
+	indexTemplate, err := template.ParseFiles("index.html.template")
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	//	// A sample config
+	//	config := []string{
+	//		"lala1", "lala2",
+	//	}
+	//	config := map[string]string{
+	//		"foo":  "bar",
+	//		"lala": `<button onclick="send(2)"># 2</button>`,
+	//		"img":  `<img src="static/logo_bassdrive" width="50"/>`,
+	//	}
+
+	// Execute needs some sort of io.Writer
+	//err = indexTemplate.Execute(wr, config)
+	err = indexTemplate.Execute(wr, presets)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 }
 
 // =============================================================================================
@@ -147,6 +181,10 @@ func exitHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("OK"))
 
 	shutdownSig <- os.Interrupt
+}
+
+func indexHandler(w http.ResponseWriter, r *http.Request) {
+	getIndexHTML(w)
 }
 
 func presetHandler(w http.ResponseWriter, r *http.Request) {
