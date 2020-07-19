@@ -27,7 +27,9 @@
          <p> 
             <button onclick="pureDirectOn()">PureDirect ON</button>
             <button onclick="pureDirectOff()">PureDirect OFF</button>
-            <button onclick="AUDIO2()">AUDIO2</button>
+            <br>
+            <button onclick="source('AUDIO2')">AUDIO2</button>
+            <button onclick="source('NET RADIO')">NET RADIO</button>
          </p>
 
       <p>

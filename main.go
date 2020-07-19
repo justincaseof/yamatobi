@@ -50,10 +50,10 @@ func main() {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/preset/{presetNum}", presetHandler).Methods(http.MethodGet)
+	r.HandleFunc("/source/{sourceName}", sourceHandler).Methods(http.MethodGet)
+	r.HandleFunc("/pureDirect/{onOrOff}", pureDirectHandler).Methods(http.MethodGet)
 	r.HandleFunc("/exit", exitHandler).Methods(http.MethodGet)
-	r.HandleFunc("/pureDirectOff", pureDirectOffHandler).Methods(http.MethodGet)
-	r.HandleFunc("/pureDirectOn", pureDirectOnHandler).Methods(http.MethodGet)
-	r.HandleFunc("/AUDIO2", audio2Handler).Methods(http.MethodGet)
+	r.HandleFunc("/", indexHandler).Methods(http.MethodGet)           // index from template
 	r.HandleFunc("/index.html", indexHandler).Methods(http.MethodGet) // index from template
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./")))        // rest from fs
 
@@ -145,22 +145,11 @@ func loadPresets() error {
 // =============================================================================================
 
 func getIndexHTML(wr io.Writer) {
-	//indexTemplate, err := template.New("index").Funcs(template.FuncMap{"join": strings.Join}).ParseFiles("index.html.template")
 	indexTemplate, err := template.ParseFiles("index.html.template")
 	if err != nil {
 		log.Println(err)
 		return
 	}
-
-	//	// A sample config
-	//	config := []string{
-	//		"lala1", "lala2",
-	//	}
-	//	config := map[string]string{
-	//		"foo":  "bar",
-	//		"lala": `<button onclick="send(2)"># 2</button>`,
-	//		"img":  `<img src="static/logo_bassdrive" width="50"/>`,
-	//	}
 
 	// Execute needs some sort of io.Writer
 	//err = indexTemplate.Execute(wr, config)
@@ -207,28 +196,15 @@ func presetHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("OK"))
 }
 
-func pureDirectOnHandler(w http.ResponseWriter, r *http.Request) {
+func sourceHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	sourceName := vars["sourceName"]
+	log.Println("### Source: " + sourceName)
+
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	var lala = bytes.Buffer{}
-	lala.WriteString("<YAMAHA_AV cmd=\"PUT\"><Main_Zone><Sound_Video><Pure_Direct><Mode>On</Mode></Pure_Direct></Sound_Video></Main_Zone></YAMAHA_AV>")
-	_, err := http.Post("http://"+config.YamahaReceiverHost+"/YamahaRemoteControl/ctrl", "text/xml", &lala)
-	if err != nil {
-		log.Println("FAIL")
-	} else {
-		log.Println("OK")
-	}
-
-	w.Write([]byte("OK"))
-}
-func pureDirectOffHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-
-	var lala = bytes.Buffer{}
-	//lala.WriteString("<YAMAHA_AV cmd=\"PUT\"><System><Pure_Direct><Mode>Off</Mode></Pure_Direct></System></YAMAHA_AV>")
-	//lala.WriteString("<YAMAHA_AV cmd=\"PUT\"><Main_Zone><Pure_Direct><Mode>Off</Mode></Pure_Direct></Main_Zone></YAMAHA_AV>")
-	//lala.WriteString("<YAMAHA_AV cmd=\"PUT\"><Main><Pure_Direct><Mode>Off</Mode></Pure_Direct></Main></YAMAHA_AV>")
-	lala.WriteString("<YAMAHA_AV cmd=\"PUT\"><Main_Zone><Sound_Video><Pure_Direct><Mode>Off</Mode></Pure_Direct></Sound_Video></Main_Zone></YAMAHA_AV>")
+	lala.WriteString("<YAMAHA_AV cmd=\"PUT\"><Main_Zone><Input><Input_Sel>" + sourceName + "</Input_Sel></Input></Main_Zone></YAMAHA_AV>")
 
 	_, err := http.Post("http://"+config.YamahaReceiverHost+"/YamahaRemoteControl/ctrl", "text/xml", &lala)
 	if err != nil {
@@ -239,33 +215,19 @@ func pureDirectOffHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Write([]byte("OK"))
 }
-func audio2Handler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-	var lala = bytes.Buffer{}
-	//lala.WriteString("<YAMAHA_AV cmd=\"PUT\"><System><Pure_Direct><Mode>Off</Mode></Pure_Direct></System></YAMAHA_AV>")
-	//lala.WriteString("<YAMAHA_AV cmd=\"PUT\"><Main_Zone><Pure_Direct><Mode>Off</Mode></Pure_Direct></Main_Zone></YAMAHA_AV>")
-	//lala.WriteString("<YAMAHA_AV cmd=\"PUT\"><Main><Pure_Direct><Mode>Off</Mode></Pure_Direct></Main></YAMAHA_AV>")
-	lala.WriteString("<YAMAHA_AV cmd=\"PUT\"><Main_Zone><Input><Input_Sel>AUDIO2</Input_Sel></Input></Main_Zone></YAMAHA_AV>")
-
-	_, err := http.Post("http://"+config.YamahaReceiverHost+"/YamahaRemoteControl/ctrl", "text/xml", &lala)
-	if err != nil {
-		log.Println("FAIL")
-	} else {
-		log.Println("OK")
+func pureDirectHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	onOrOff := vars["onOrOff"]
+	log.Println("### State: " + onOrOff)
+	if onOrOff != "On" && onOrOff != "Off" {
+		log.Println("### Unknown state!")
 	}
 
-	w.Write([]byte("OK"))
-}
-func NETRADIOHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	var lala = bytes.Buffer{}
-	//lala.WriteString("<YAMAHA_AV cmd=\"PUT\"><System><Pure_Direct><Mode>Off</Mode></Pure_Direct></System></YAMAHA_AV>")
-	//lala.WriteString("<YAMAHA_AV cmd=\"PUT\"><Main_Zone><Pure_Direct><Mode>Off</Mode></Pure_Direct></Main_Zone></YAMAHA_AV>")
-	//lala.WriteString("<YAMAHA_AV cmd=\"PUT\"><Main><Pure_Direct><Mode>Off</Mode></Pure_Direct></Main></YAMAHA_AV>")
-	lala.WriteString("<YAMAHA_AV cmd=\"PUT\"><Main_Zone><Input><Input_Sel>NET RADIO</Input_Sel></Input></Main_Zone></YAMAHA_AV>")
-
+	lala.WriteString("<YAMAHA_AV cmd=\"PUT\"><Main_Zone><Sound_Video><Pure_Direct><Mode>" + onOrOff + "</Mode></Pure_Direct></Sound_Video></Main_Zone></YAMAHA_AV>")
 	_, err := http.Post("http://"+config.YamahaReceiverHost+"/YamahaRemoteControl/ctrl", "text/xml", &lala)
 	if err != nil {
 		log.Println("FAIL")

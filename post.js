@@ -29,13 +29,13 @@ function shutdown (){
 }
 
 function pureDirectOn (){
-   GETCommand("pureDirectOn")
+   GETCommand("pureDirect/On")
 }
 
 function pureDirectOff (){
-   GETCommand("pureDirectOff")
+   GETCommand("pureDirect/Off")
 }
 
-function AUDIO2 (){
-   GETCommand("AUDIO2")
+function source (sourceName){
+   GETCommand("source/" + sourceName)
 }
