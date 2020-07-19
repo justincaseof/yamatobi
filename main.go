@@ -41,10 +41,8 @@ func main() {
 	if err != nil {
 		panic("Cannot load config")
 	}
-	if loadPresets() != nil {
-		panic("Cannot load presets from config")
-	}
-	getIndexHTML(os.Stdout)
+
+	getIndexHTML(os.Stdout) // debug
 
 	defer log.Println("Exit.")
 
@@ -173,6 +171,16 @@ func exitHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
+	// FIXME: reload during runtime?
+	err := LoadConfiguration(&config)
+	if err != nil {
+		panic("Cannot load config")
+	}
+	if loadPresets() != nil {
+		panic("Cannot load presets from config")
+	}
+
+	// write template putput to response
 	getIndexHTML(w)
 }
 
