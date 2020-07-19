@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -47,9 +48,11 @@ func main() {
 
 	r.Use(mux.CORSMethodMiddleware(r))
 
+	srvAddr := "0.0.0.0:" + strconv.Itoa(int(config.Server.ListenPort))
+	log.Println("Starging server on addr:" + srvAddr)
 	srv := &http.Server{
 		Handler: r,
-		Addr:    "127.0.0.1:9000",
+		Addr:    srvAddr,
 		// Good practice: enforce timeouts for servers you create!
 		WriteTimeout: 5 * time.Second,
 		ReadTimeout:  5 * time.Second,
