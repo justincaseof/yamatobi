@@ -1,51 +1,46 @@
 <!DOCTYPE html>
 <html lang="de">
-   <head>
-      <meta charset="utf-8">
-      <title>YAMATOBI</title>
-      <script src="post.js" defer></script>
-   </head>
-   <body>
-      <!--<form method="POST" action="usernamecheck.php">-->
-         <p>YAMAHA RXV771 PRESET</p>
-         <button onclick="send(1)"># 1</button>
-		 <button onclick="send(2)"># 2</button>
-		 <button onclick="send(3)"># 3</button>
-		 <button onclick="send(4)"># 4</button>
-		 <button onclick="send(5)"># 5</button>
-		 <button onclick="send(6)"># 6</button>
-		 
-		 <p>
-		 TODOS:<br>
-		  * input: audio2 + analogmode<br>
-		  * input: webradio<br>
-		  * sleep<br>
-       </p>
-         <button onclick="shutdown()">EXIT</button>
-       <p>
 
-         <p> 
-            <button onclick="pureDirectOn()">PureDirect ON</button>
-            <button onclick="pureDirectOff()">PureDirect OFF</button>
-            <br>
-            <button onclick="source('AUDIO2')">AUDIO2</button>
-            <button onclick="source('NET RADIO')">NET RADIO</button>
-         </p>
+<head>
+   <meta charset="utf-8">
+   <title>YAMATOBI</title>
+   <script src="post.js" defer></script>
+   <link rel="stylesheet" href="style.css">
+</head>
 
-      <p>
-         ##########################################################################
-      </p>
-      <ul>
-         {{range .}}
-             <li>
-               {{.Index}} :: {{.Name}}<br>
-               <img src="{{.IconURL}}" width="50" />
-               <button onclick="send({{.Index}})"># {{.Name}}</button>
-             </li>
+<body>
+   <p>
+      ##########################################################################
+   </p>
+
+   <h2>Control</h2>
+
+   <button onclick="pureDirectOn()">PureDirect ON</button>
+   <br>
+   <button onclick="pureDirectOff()">PureDirect OFF</button>
+   <br>
+   <button onclick="source('AUDIO2')">AUDIO2</button>
+   <br>
+   <button onclick="source('NET RADIO')">NET RADIO</button>
+
+   <p>
+      ##########################################################################
+   </p>
+
+   <div>
+      <h2>Presets</h2>
+
+      {{range .}}
+      <div id="preset_{{.Index}}">
+         {{.Index}} :: {{.Name}}
+         <br>
+         <img src="{{.IconURL}}" width="50" />
+         <br>
+         <button onclick="send({{.Index}})"># {{.Name}}</button>
+
          {{end}}
-      </ul>
+      <div>
 
-       </p>
-      <!--</form>-->
-   </body>
+</body>
+
 </html>
