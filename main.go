@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -33,9 +32,16 @@ type Config struct {
 
 var shutdownSig chan os.Signal
 var config Config
+var presets map[uint8]*Preset
 
 func main() {
-	LoadConfiguration(&config)
+	err := LoadConfiguration(&config)
+	if err != nil {
+		panic("Cannot load config")
+	}
+	if loadPresets() != nil {
+		panic("Cannot load presets from config")
+	}
 	defer log.Println("Exit.")
 
 	r := mux.NewRouter()
@@ -49,7 +55,7 @@ func main() {
 	r.Use(mux.CORSMethodMiddleware(r))
 
 	srvAddr := "0.0.0.0:" + strconv.Itoa(int(config.Server.ListenPort))
-	log.Println("Starging server on addr:" + srvAddr)
+	log.Println("Starging local Web Listener on Addr: " + srvAddr)
 	srv := &http.Server{
 		Handler: r,
 		Addr:    srvAddr,
@@ -58,7 +64,7 @@ func main() {
 		ReadTimeout:  5 * time.Second,
 	}
 
-	log.Println("Starting Server using Yamaha RX-V771 @ " + config.YamahaReceiverHost)
+	log.Println("Using Yamaha RX-V771 @ " + config.YamahaReceiverHost)
 	go srv.ListenAndServe()
 
 	shutdownSig = make(chan os.Signal)
@@ -74,14 +80,14 @@ func main() {
 
 // =============================================================================================
 
-func LoadConfiguration(config *Config) {
+func LoadConfiguration(config *Config) error {
 	configFile, err := os.Open(ConfigFileName)
 	defer configFile.Close()
 	if err != nil {
-		fmt.Println(err.Error())
+		return err
 	}
 	jsonParser := json.NewDecoder(configFile)
-	jsonParser.Decode(config)
+	return jsonParser.Decode(config)
 }
 
 func PersistConfiguration(config *Config) {
@@ -117,6 +123,18 @@ func isFile(filename string) bool {
 	}
 	return !info.IsDir()
 
+}
+
+func loadPresets() error {
+	presets = make(map[uint8]*Preset)
+	for _, preset := range config.Presets {
+		if presets[preset.Index] != nil {
+			log.Println("Duplicate entry for Index '" + strconv.Itoa(int(preset.Index)) + "'. Overwriting it with current one.")
+		}
+		presets[preset.Index] = &preset
+	}
+
+	return nil
 }
 
 // =============================================================================================

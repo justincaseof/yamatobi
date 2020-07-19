@@ -1,0 +1,28 @@
+{
+    "yamahaReceiverHost": "192.168.178.7",
+    "Presets": [
+        {
+            "Index": 1,
+            "Name": "jungletrain.net",
+            "IconURL": "static/logo_jungletrain.png"
+        },
+        {
+            "Index": 2,
+            "Name": "Bassdrive",
+            "IconURL": "static/logo_bassdrive.png"
+        },
+        {
+            "Index": 99,
+            "Name": "foo",
+            "IconURL": "foo.png"
+        },
+        {
+            "Index": 99,
+            "Name": "bar",
+            "IconURL": "bar.png"
+        }
+    ],
+    "Server": {
+        "ListenPort": 9000
+    }
+}
