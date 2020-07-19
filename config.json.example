@@ -12,14 +12,19 @@
             "IconURL": "static/logo_bassdrive.png"
         },
         {
+            "Index": 3,
+            "Name": "16bit.fm I.D.E.A.",
+            "IconURL": "logo_16bitfmidea.png"
+        },
+        {
             "Index": 99,
             "Name": "foo",
             "IconURL": "foo.png"
         },
         {
             "Index": 99,
-            "Name": "bar",
-            "IconURL": "bar.png"
+            "Name": "foobar_override",
+            "IconURL": "foobar_override.png"
         }
     ],
     "Server": {
